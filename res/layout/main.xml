@@ -9,5 +9,16 @@
     android:layout_height="wrap_content" 
     android:text="@string/hello"
     />
-<SurfaceView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/SurfaceViewCamera"></SurfaceView>
+
+<LinearLayout android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="wrap_content" android:id="@+id/LinearLayoutCamera" android:layout_gravity="center_horizontal" android:padding="20px">
+    
+    <SurfaceView android:layout_height="wrap_content" 
+        android:layout_width="wrap_content" 
+        android:id="@+id/SurfaceViewCamera" android:minWidth="120px" android:minHeight="160px" android:layout_margin="20px"></SurfaceView>
+    <ImageView android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:id="@+id/ImageViewRx" android:background="@drawable/tachead" android:layout_margin="20px"></ImageView>
+    
+</LinearLayout>
+
+
 </LinearLayout>
