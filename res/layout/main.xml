@@ -4,19 +4,12 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/hello"
-    />
 
-<LinearLayout android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="wrap_content" android:id="@+id/LinearLayoutCamera" android:layout_gravity="center_horizontal" android:padding="20px">
+
+<LinearLayout android:layout_height="wrap_content" android:orientation="horizontal" android:id="@+id/LinearLayoutCamera" android:layout_gravity="center_horizontal" android:padding="20px" android:layout_width="fill_parent">
     
-    <SurfaceView android:layout_height="wrap_content" 
-        android:layout_width="wrap_content" 
-        android:id="@+id/SurfaceViewCamera" android:minWidth="120px" android:minHeight="160px" android:layout_margin="20px"></SurfaceView>
-    <ImageView android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:id="@+id/ImageViewRx" android:background="@drawable/tachead" android:layout_margin="20px"></ImageView>
+    <SurfaceView android:id="@+id/SurfaceViewCamera" android:minWidth="120px" android:minHeight="160px" android:layout_margin="20px" android:layout_width="320px" android:layout_height="240px"></SurfaceView>
+    <ImageView android:id="@+id/ImageViewRx" android:background="@drawable/tachead" android:layout_margin="20px" android:layout_height="fill_parent" android:layout_width="fill_parent"></ImageView>
     
 </LinearLayout>
 
