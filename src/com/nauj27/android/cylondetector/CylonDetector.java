@@ -5,6 +5,8 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.media.FaceDetector;
@@ -125,10 +127,12 @@ public class CylonDetector extends Activity {
 		public void onPreviewFrame(byte[] data, Camera camera) {
 			Face[] faces = new Face[1];
 			
-			
+			// The following line is not working :(
+			Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 			// FIXME: We have to create a Bitmap from data from the camera preview
+			
 			FaceDetector faceDetector = new FaceDetector(320, 240, 1);
-			//faceDetector.findFaces(data, faces);
+			faceDetector.findFaces(bitmap, faces);
 			
 		}
 		
