@@ -5,13 +5,12 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.media.FaceDetector;
 import android.media.FaceDetector.Face;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.Window;
@@ -104,8 +103,8 @@ public class CylonDetector extends Activity {
 					// AND RETURN
 				}
 				
-				camera.setPreviewCallback(previewCallback);
 				camera.startPreview();
+				camera.setPreviewCallback(previewCallback);
 			} else {
 				// TODO: SHOW TO THE USER THAT CAN'T OPEN THE CAMERA
 			}
@@ -113,6 +112,7 @@ public class CylonDetector extends Activity {
 		
 		@Override
 		public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+			camera.setPreviewCallback(null); // Stop receiving call backs.
 			camera.stopPreview();
 			camera.release();
 			camera = null;
@@ -126,13 +126,19 @@ public class CylonDetector extends Activity {
 		@Override
 		public void onPreviewFrame(byte[] data, Camera camera) {
 			Face[] faces = new Face[1];
+			int facesNumberFound = 0;
 			
-			// The following line is not working :(
-			Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 			// FIXME: We have to create a Bitmap from data from the camera preview
+			//Bitmap bitmap = Bitmap.createBitmap(rawImage, 320, 240, Bitmap.Config.);
+			//PlanarYUVLuminanceSource p;
 			
 			FaceDetector faceDetector = new FaceDetector(320, 240, 1);
-			faceDetector.findFaces(bitmap, faces);
+			//facesNumberFound = faceDetector.findFaces(bitmap, faces);
+			
+			if (facesNumberFound > 0) {
+				// TODO: GET PHOTO AND "ANALIZE" TO SEARCH FOR CYLON BEING
+				Log.d("FaceDetector", "Face found");
+			}
 			
 		}
 		
