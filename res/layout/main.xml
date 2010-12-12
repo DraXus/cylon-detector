@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
+    android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="fill_parent">
 
 
-<LinearLayout android:layout_height="wrap_content" android:orientation="horizontal" android:id="@+id/LinearLayoutCamera" android:layout_gravity="center_horizontal" android:padding="20px" android:layout_width="fill_parent">
+<LinearLayout android:id="@+id/LinearLayoutCamera" android:padding="20px" android:layout_width="fill_parent" android:orientation="vertical" android:layout_height="fill_parent">
     
-    <SurfaceView android:id="@+id/SurfaceViewCamera" android:minWidth="120px" android:minHeight="160px" android:layout_margin="20px" android:layout_width="320px" android:layout_height="240px"></SurfaceView>
-    <ImageView android:id="@+id/ImageViewRx" android:background="@drawable/tachead" android:layout_margin="20px" android:layout_height="fill_parent" android:layout_width="fill_parent"></ImageView>
+    <ImageView android:id="@+id/ImageViewRx" android:background="@drawable/cylondetector_icon_square_black" android:layout_width="wrap_content" android:scaleType="fitStart" android:layout_height="wrap_content" android:layout_marginBottom="50px"></ImageView>
+    <SurfaceView android:id="@+id/SurfaceViewCamera" android:layout_width="320px" android:layout_height="240px" android:minHeight="240px" android:minWidth="320px"></SurfaceView>
     
 </LinearLayout>
 

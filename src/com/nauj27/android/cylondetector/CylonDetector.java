@@ -7,7 +7,8 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
-import android.hardware.Camera.Size;
+import android.media.FaceDetector;
+import android.media.FaceDetector.Face;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -15,9 +16,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 public class CylonDetector extends Activity {
-	
-	private static final int PREVIEW_SIZE_WIDTH = 160;
-	private static final int PREVIEW_SIZE_HEIGHT = 120;
 	
 	private Camera camera = null;
 	
@@ -79,18 +77,22 @@ public class CylonDetector extends Activity {
 				List<Camera.Size> supportedPreviewSizes = cameraParameters.getSupportedPreviewSizes();
 				
 				// Search for the minimum camera preview size, just check width
-				int previewSizeIndex = 0;
-				for (int index = 0; index < supportedPreviewSizes.size(); index++) {
-					if (supportedPreviewSizes.get(index).width < supportedPreviewSizes.get(previewSizeIndex).width) {
-						previewSizeIndex = index;
+				Camera.Size cameraSize = null;
+				if (supportedPreviewSizes == null) {
+					// Set the camera size of the emulator
+					cameraSize = camera.new Size(213, 350);
+				} else {
+					int previewSizeIndex = 0;
+					for (int index = 0; index < supportedPreviewSizes.size(); index++) {
+						if (supportedPreviewSizes.get(index).width < supportedPreviewSizes.get(previewSizeIndex).width) {
+							previewSizeIndex = index;
+						}
 					}
+					cameraSize = supportedPreviewSizes.get(previewSizeIndex);
 				}
-				Camera.Size cameraSize = supportedPreviewSizes.get(previewSizeIndex);
+				
 				cameraParameters.setPreviewSize(cameraSize.width, cameraSize.height);
-				
-				// Set auto white balance
 				cameraParameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
-				
 				camera.setParameters(cameraParameters);
 				
 				try {
@@ -100,6 +102,7 @@ public class CylonDetector extends Activity {
 					// AND RETURN
 				}
 				
+				camera.setPreviewCallback(previewCallback);
 				camera.startPreview();
 			} else {
 				// TODO: SHOW TO THE USER THAT CAN'T OPEN THE CAMERA
@@ -113,5 +116,21 @@ public class CylonDetector extends Activity {
 			camera = null;
 		}
 
+	};
+	
+	
+	private Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
+
+		@Override
+		public void onPreviewFrame(byte[] data, Camera camera) {
+			Face[] faces = new Face[1];
+			
+			
+			// FIXME: We have to create a Bitmap from data from the camera preview
+			FaceDetector faceDetector = new FaceDetector(320, 240, 1);
+			//faceDetector.findFaces(data, faces);
+			
+		}
+		
 	};
 }
