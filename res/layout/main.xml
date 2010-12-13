@@ -7,8 +7,9 @@
     
     <ImageView android:id="@+id/ImageViewRx" android:background="@drawable/cylondetector_icon_square_black" android:layout_width="wrap_content" android:scaleType="fitStart" android:layout_height="wrap_content" android:layout_marginBottom="50px"></ImageView>
     <SurfaceView android:id="@+id/SurfaceViewCamera" android:layout_width="320px" android:layout_height="240px" android:minHeight="240px" android:minWidth="320px"></SurfaceView>
-    
+
 </LinearLayout>
 
+<ImageView android:layout_height="240px" android:layout_width="320px" android:id="@+id/ImageViewDebug"></ImageView>
 
 </LinearLayout>

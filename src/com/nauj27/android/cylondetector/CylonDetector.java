@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.media.FaceDetector;
@@ -15,10 +16,20 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 public class CylonDetector extends Activity {
 	
 	private Camera camera = null;
+	private ImageView imageViewDebug = null;
+	
+	private int previewCameraWidth = 0;
+	private int previewCameraHeight = 0;
+	
+	private static final int PREVIEW_CAMERA_EMULATOR_WIDTH = 350;
+	private static final int PREVIEW_CAMERA_EMULATOR_HEIGHT = 213;
+	
+	private static final int FACES_NUMBER_TO_SEARCH = 1;
 	
     /** Called when the activity is first created. */
     @Override
@@ -40,6 +51,9 @@ public class CylonDetector extends Activity {
         
         // Get the surface view where to put the camera images
 		SurfaceView surfaceView = (SurfaceView)findViewById(R.id.SurfaceViewCamera);
+		
+		// debug purposes
+		imageViewDebug = (ImageView)findViewById(R.id.ImageViewDebug);
 		
 		// Get the surface holder and add properties and callback
 		SurfaceHolder surfaceHolder = surfaceView.getHolder();
@@ -73,16 +87,22 @@ public class CylonDetector extends Activity {
 			
 			if (camera != null) {
 				Camera.Parameters cameraParameters = camera.getParameters();
-				
-				// Get the supported preview sizes
 				List<Camera.Size> supportedPreviewSizes = cameraParameters.getSupportedPreviewSizes();
 				
-				// Search for the minimum camera preview size, just check width
+				
 				Camera.Size cameraSize = null;
+				
 				if (supportedPreviewSizes == null) {
-					// Set the camera size of the emulator
-					cameraSize = camera.new Size(213, 350);
+				
+					// There is a but in the emulator for 2.1 SDK
+					// According to the doc, getSupportedPreviewSizes does 
+					// ALWAYS returns a List with at least one element but
+					// on the emulator 2.1 SDK version it returns null.
+					cameraSize = camera.new Size(PREVIEW_CAMERA_EMULATOR_HEIGHT, PREVIEW_CAMERA_EMULATOR_WIDTH);
+				
 				} else {
+					
+					// Search for the minimum camera preview size, just check width
 					int previewSizeIndex = 0;
 					for (int index = 0; index < supportedPreviewSizes.size(); index++) {
 						if (supportedPreviewSizes.get(index).width < supportedPreviewSizes.get(previewSizeIndex).width) {
@@ -90,9 +110,14 @@ public class CylonDetector extends Activity {
 						}
 					}
 					cameraSize = supportedPreviewSizes.get(previewSizeIndex);
+					
 				}
 				
-				cameraParameters.setPreviewSize(cameraSize.width, cameraSize.height);
+				// Save values for later use
+				previewCameraWidth = cameraSize.width;
+				previewCameraHeight = cameraSize.height;
+				
+				cameraParameters.setPreviewSize(previewCameraWidth, previewCameraHeight);
 				cameraParameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
 				camera.setParameters(cameraParameters);
 				
@@ -125,15 +150,22 @@ public class CylonDetector extends Activity {
 
 		@Override
 		public void onPreviewFrame(byte[] data, Camera camera) {
-			Face[] faces = new Face[1];
+			Face[] faces = new Face[FACES_NUMBER_TO_SEARCH];
 			int facesNumberFound = 0;
 			
-			// FIXME: We have to create a Bitmap from data from the camera preview
-			//Bitmap bitmap = Bitmap.createBitmap(rawImage, 320, 240, Bitmap.Config.);
-			//PlanarYUVLuminanceSource p;
+			Bitmap bitmap = Utils.getBitmapFromNV21(data, previewCameraWidth, previewCameraHeight);
+			imageViewDebug.setImageBitmap(bitmap);
 			
-			FaceDetector faceDetector = new FaceDetector(320, 240, 1);
-			//facesNumberFound = faceDetector.findFaces(bitmap, faces);
+			FaceDetector faceDetector = new FaceDetector(
+					previewCameraWidth, 
+					previewCameraHeight, 
+					FACES_NUMBER_TO_SEARCH);
+			
+			// FIXME: According to the documentation the bitmap must be
+			// in 565 format and my getBitmapFromNV21 is returning ARGB_8888!
+			//
+			// http://developer.android.com/reference/android/media/FaceDetector.html#findFaces%28android.graphics.Bitmap,%20android.media.FaceDetector.Face[]%29
+			facesNumberFound = faceDetector.findFaces(bitmap, faces);
 			
 			if (facesNumberFound > 0) {
 				// TODO: GET PHOTO AND "ANALIZE" TO SEARCH FOR CYLON BEING
