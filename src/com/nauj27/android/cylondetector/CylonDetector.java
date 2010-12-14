@@ -153,7 +153,12 @@ public class CylonDetector extends Activity {
 			Face[] faces = new Face[FACES_NUMBER_TO_SEARCH];
 			int facesNumberFound = 0;
 			
-			Bitmap bitmap = Utils.getBitmapFromNV21(data, previewCameraWidth, previewCameraHeight);
+			Bitmap bitmap = Utils.getBitmapFromNV21(
+					data, 
+					previewCameraWidth, 
+					previewCameraHeight,
+					Bitmap.Config.RGB_565);
+			
 			imageViewDebug.setImageBitmap(bitmap);
 			
 			FaceDetector faceDetector = new FaceDetector(
@@ -161,14 +166,11 @@ public class CylonDetector extends Activity {
 					previewCameraHeight, 
 					FACES_NUMBER_TO_SEARCH);
 			
-			// FIXME: According to the documentation the bitmap must be
-			// in 565 format and my getBitmapFromNV21 is returning ARGB_8888!
-			//
-			// http://developer.android.com/reference/android/media/FaceDetector.html#findFaces%28android.graphics.Bitmap,%20android.media.FaceDetector.Face[]%29
 			facesNumberFound = faceDetector.findFaces(bitmap, faces);
 			
 			if (facesNumberFound > 0) {
 				// TODO: GET PHOTO AND "ANALIZE" TO SEARCH FOR CYLON BEING
+				camera.autoFocus(null);
 				Log.d("FaceDetector", "Face found");
 			}
 			

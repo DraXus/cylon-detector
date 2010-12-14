@@ -18,9 +18,12 @@ public class Utils {
 	 * this way we obtains a black and white image for processing.
 	 * 
 	 * @param data The data array in NV21 (YCbCr_420_SP) format.
+	 * @param width The photo width.
+	 * @param height The photo height.
+	 * @param bitmapConfig The desired Bitmap.Config format.
 	 * @return Black and white bitmap decoded from NV21 input data.
 	 */
-	public static Bitmap getBitmapFromNV21(byte[] data, int width, int height) {
+	public static Bitmap getBitmapFromNV21(byte[] data, int width, int height, Bitmap.Config bitmapConfig) {
 		
 		int grey = 0;
 		int pixelsNumber = width * height;
@@ -30,8 +33,8 @@ public class Utils {
 			grey = data[pixel] & 0xff;
 			colors[pixel] = 0xff000000 | (grey * 0x00010101);
 		}
-		
-		Bitmap bitmap = Bitmap.createBitmap(colors, width, height, Bitmap.Config.ARGB_8888); 
+
+		Bitmap bitmap = Bitmap.createBitmap(colors, width, height, bitmapConfig);
 		
 		return bitmap;
 	}
