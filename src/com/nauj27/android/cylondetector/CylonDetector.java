@@ -2,6 +2,7 @@ package com.nauj27.android.cylondetector;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
@@ -12,6 +13,7 @@ import android.media.FaceDetector;
 import android.media.FaceDetector.Face;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -37,6 +39,11 @@ public class CylonDetector extends Activity {
 	private static final int PREVIEW_CAMERA_EMULATOR_HEIGHT = 213;
 	
 	private static final int FACES_NUMBER_TO_SEARCH = 1;
+	private static final int ANALIZING_TIME_MILLIS = 7000;
+	
+	private static final int RESULTS_NUMBER = 2;
+	private static final int RESULT_IS_CYLON = 0;
+	private static final int RESULT_IS_HUMAN = 1;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -184,6 +191,7 @@ public class CylonDetector extends Activity {
 		}
 	};
 	
+	
 	/**
 	 * Autofocus callback.
 	 */
@@ -195,23 +203,57 @@ public class CylonDetector extends Activity {
 		}
 	};
 	
+	
+	/**
+	 * Shutter callback. This is called when the camera shut the photo.
+	 */
 	private Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
 		
 		@Override
 		public void onShutter() {
-			MediaPlayer mediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.theme);
-			mediaPlayer.start();
+			//MediaPlayer mediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.theme);
+			//mediaPlayer.start();
 			//mediaPlayer.release();
 		}
 	};
 	
+	
+	/**
+	 * Picture callback when the raw data of the photo is available.
+	 */
 	private Camera.PictureCallback pictureCallbackRaw = new Camera.PictureCallback() {
 		
 		@Override
 		public void onPictureTaken(byte[] data, Camera camera) {
-			// TODO: Waste some time analyzing subject.
-			//MediaPlayer mediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.cylon);
-			//mediaPlayer.start();
+			Handler timedEventHandler = new Handler();
+			timedEventHandler.postDelayed(showResult, ANALIZING_TIME_MILLIS);
 		}
+	};
+	
+	
+	/**
+	 * Show result and play sound as result of the Cylon Detector.
+	 * TODO: Play with visual feedback!
+	 */
+	private Runnable showResult = new Runnable() {
+		
+		public void run() {
+			Random random = new Random();
+			int result = random.nextInt(RESULTS_NUMBER);
+			
+			MediaPlayer mediaPlayer = null;
+		
+			switch(result) {
+			case RESULT_IS_CYLON:
+				mediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.cylon);
+			case RESULT_IS_HUMAN:
+				mediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.human);
+			}
+			
+			if (mediaPlayer != null) {
+				mediaPlayer.start();
+			}
+		}
+		
 	};
 }
