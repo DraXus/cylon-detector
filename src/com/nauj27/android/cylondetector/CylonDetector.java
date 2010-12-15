@@ -10,18 +10,25 @@ import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.media.FaceDetector;
 import android.media.FaceDetector.Face;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
+/**
+ * Main activity of the CylonDetector.
+ * @author nauj27
+ *
+ */
 public class CylonDetector extends Activity {
 	
 	private Camera camera = null;
-	private ImageView imageViewDebug = null;
+	//private ImageView imageViewDebug = null;
+	
+	private boolean faceDetected = false;
 	
 	private int previewCameraWidth = 0;
 	private int previewCameraHeight = 0;
@@ -31,7 +38,6 @@ public class CylonDetector extends Activity {
 	
 	private static final int FACES_NUMBER_TO_SEARCH = 1;
 	
-    /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,14 +59,13 @@ public class CylonDetector extends Activity {
 		SurfaceView surfaceView = (SurfaceView)findViewById(R.id.SurfaceViewCamera);
 		
 		// debug purposes
-		imageViewDebug = (ImageView)findViewById(R.id.ImageViewDebug);
+		//imageViewDebug = (ImageView)findViewById(R.id.ImageViewDebug);
 		
 		// Get the surface holder and add properties and callback
 		SurfaceHolder surfaceHolder = surfaceView.getHolder();
 		surfaceHolder.setKeepScreenOn(true);
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 		surfaceHolder.addCallback(surfaceCallback);
-		
     }
     
 	/**
@@ -131,7 +136,7 @@ public class CylonDetector extends Activity {
 				camera.startPreview();
 				camera.setPreviewCallback(previewCallback);
 			} else {
-				// TODO: SHOW TO THE USER THAT CAN'T OPEN THE CAMERA
+				// TODO: SHOW TO THE USER THAT CAN'T ACCESS THE CAMERA
 			}
 		}
 		
@@ -146,6 +151,9 @@ public class CylonDetector extends Activity {
 	};
 	
 	
+	/**
+	 * Event manager to receive every frame of the camera preview.
+	 */
 	private Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
 
 		@Override
@@ -159,7 +167,7 @@ public class CylonDetector extends Activity {
 					previewCameraHeight,
 					Bitmap.Config.RGB_565);
 			
-			imageViewDebug.setImageBitmap(bitmap);
+			//imageViewDebug.setImageBitmap(bitmap);
 			
 			FaceDetector faceDetector = new FaceDetector(
 					previewCameraWidth, 
@@ -168,13 +176,42 @@ public class CylonDetector extends Activity {
 			
 			facesNumberFound = faceDetector.findFaces(bitmap, faces);
 			
-			if (facesNumberFound > 0) {
-				// TODO: GET PHOTO AND "ANALIZE" TO SEARCH FOR CYLON BEING
-				camera.autoFocus(null);
+			if ((facesNumberFound > 0) && !faceDetected) {
 				Log.d("FaceDetector", "Face found");
+				faceDetected = true;
+				camera.autoFocus(autoFocusCallback);
 			}
-			
 		}
+	};
+	
+	/**
+	 * Autofocus callback.
+	 */
+	private Camera.AutoFocusCallback autoFocusCallback = new Camera.AutoFocusCallback() {
 		
+		@Override
+		public void onAutoFocus(boolean success, Camera camera) {
+			camera.takePicture(shutterCallback, pictureCallbackRaw, null, null);
+		}
+	};
+	
+	private Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
+		
+		@Override
+		public void onShutter() {
+			MediaPlayer mediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.theme);
+			mediaPlayer.start();
+			//mediaPlayer.release();
+		}
+	};
+	
+	private Camera.PictureCallback pictureCallbackRaw = new Camera.PictureCallback() {
+		
+		@Override
+		public void onPictureTaken(byte[] data, Camera camera) {
+			// TODO: Waste some time analyzing subject.
+			//MediaPlayer mediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.cylon);
+			//mediaPlayer.start();
+		}
 	};
 }
