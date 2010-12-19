@@ -211,9 +211,7 @@ public class CylonDetector extends Activity {
 		
 		@Override
 		public void onShutter() {
-			//MediaPlayer mediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.theme);
-			//mediaPlayer.start();
-			//mediaPlayer.release();
+			//camera.stopPreview();
 		}
 	};
 	
